@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="marketCmmdty">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into MARKET_CMMDTY
+				  (ID,LIMITED_ID,SKU_ID,SPU_ID,ORIGINAL_PRICE,FIRST_NAVID,ORDER_MAX,ORDER_MIN,DISCOUNT_TYPE)
+			values(:id,:limitedId,:skuId,:spuId,:originalPrice,:firstNavid,:orderMax,:orderMin,:discountType)
+		]]>
+    </sql>
+    
+    <sql id="selectByParam">
+    	<![CDATA[
+    		select ID as id,LIMITED_ID as limitedId,SKU_ID as skuId,SPU_ID as spuId,ORIGINAL_PRICE as originalPrice,FIRST_NAVID as firstNavid ,ORDER_MAX as orderMax,ORDER_MIN as orderMin,DISCOUNT_TYPE as discountType from MARKET_CMMDTY where 1=1  
+    		<#if limitedIds?exists && limitedIds!="">
+    			and LIMITED_ID in(${limitedIds})
+    		</#if>
+    		<#if skuId?exists && skuId!="">
+    			and SKU_ID = :skuId
+    		</#if>
+		]]>
+    </sql>
+    
+    <sql id="updateById">
+    	<![CDATA[
+    		update MARKET_CMMDTY set ID = :id 
+    		<#if limitedId?exists && limitedId!="">
+    			, LIMITED_ID = :limitedId
+    		</#if>
+    		<#if cmmdtyId?exists && cmmdtyId!="">
+    			, CMMDTY_ID = :cmmdtyId
+    		</#if>
+    		<#if cmmdtyChildtd?exists && cmmdtyChildtd!="">
+    			, CMMDTY_CHILDID = :cmmdtyChildtd
+    		</#if>
+    		<#if orginalPrice?exists && orginalPrice!="">
+    			, ORIGINAL_PRICE = :orginalPrice
+    		</#if>
+    		<#if price?exists && price!="">
+    			, PRICE = :price
+    		</#if>
+    		<#if limitMin?exists && limitMin!="">
+    			, LIMIT_MIN = :limitMin
+    		</#if>
+    		<#if limitMax?exists && limitMax!="">
+    			, LIMIT_MAX = :limitMax
+    		</#if>
+    		<#if state?exists && state!="">
+    			, STATUS = :state
+    		</#if>
+    		WHERE ID = :id
+		]]>
+    </sql>
+	
+    <sql id="deleteById">
+    	<![CDATA[
+    		delete from MARKET_CMMDTY where ID in (${applyGoodIds})
+		]]>
+    </sql>
+	
+	<sql id="deleteByLimiteId">
+    	<![CDATA[
+    		delete from MARKET_CMMDTY where LIMITED_ID = :limitedId
+		]]>
+    </sql>
+    
+    
+    <sql id="queryList">
+    	<![CDATA[
+    		select ID as id,LIMITED_ID as limitedId,SKU_ID as skuId,SPU_ID as spuId,ORIGINAL_PRICE as originalPrice,FIRST_NAVID as firstNavid ,ORDER_MAX as orderMax,ORDER_MIN as orderMin,DISCOUNT_TYPE as discountType from MARKET_CMMDTY where 1=1  
+    		<#if limitedId?exists && limitedId!="">
+    			and LIMITED_ID = :limitedId
+    		</#if>
+		]]>
+    </sql>
+    
+</sqlMap>

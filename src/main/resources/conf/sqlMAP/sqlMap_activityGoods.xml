@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="activityGoods">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into market_activity_goods
+				  (ID,SPU_ID,SKU_ID,SCH_ID,SUPP_ID,GOODS_TITLE,GOODS_IMG,FAVORABLE_PRICE,ORIGINAL_PRICE,MIN_ORDER,GOODS_COUNT,
+				  MAX_PURCHASE,FIRST_NAVID,EM_OFF_SHELF,UPDATE_TIME,UPDATE_USER_ID)
+			values(:id,:spuId,:skuId,:schId,:suppId,:goodsTitle,:goodsImg,:favorablePrice,:originalPrice,:minOrder,:goodsCount,
+				  :maxPurchase,:firstNavId,:emOffShelf,:updateTime,:updateUserId)
+		]]>
+    </sql>
+    
+    
+  <sql id="insertToSelect">
+    	<![CDATA[
+    		 insert into market_activity_goods
+				(ID,SPU_ID,SKU_ID,SCH_ID,SUPP_ID,GOODS_TITLE,GOODS_IMG,FAVORABLE_PRICE,GOODS_COUNT,
+								  MAX_PURCHASE,FIRST_NAVID,UPDATE_TIME,UPDATE_USER_ID,EM_OFF_SHELF)
+				select a.ID,a.SPU_ID,a.SKU_ID,b.SCH_ID,b.SUPP_ID,a.GOODS_TITLE,a.GOODS_IMG,a.FAVORABLE_PRICE,a.GOODS_COUNT,
+								  a.MAX_PURCHASE,a.FIRST_NAVID,a.UPDATE_TIME,a.UPDATE_USER_ID,0
+								  from MARKET_APPLY_GOODS a,MARKET_APPLY b
+				where a.APPLY_ID=b.id
+				and a.id=:id
+		]]>
+    </sql>
+    
+    
+
+    <sql id="select">
+    	<![CDATA[
+    		select ID as id,SPU_ID as spuId,SKU_ID as skuId,SCH_ID as schId,SUPP_ID as suppId,GOODS_TITLE as goodsTitle,GOODS_IMG as goodsImg,
+    			FAVORABLE_PRICE as favorablePrice,ORIGINAL_PRICE as originalPrice,MIN_ORDER as minOrder,GOODS_COUNT as goodsCount,
+    			MAX_PURCHASE as maxPurchase,FIRST_NAVID as firstNavId,EM_OFF_SHELF as emOffShelf,UPDATE_TIME as updateTime,UPDATE_USER_ID as updateUserId
+    		from market_activity_goods where 1=1
+    		<#if id?exists && id!="">
+    			and ID = :id
+    		</#if>
+    		<#if skuId?exists && skuId!="">
+    			and SKU_ID = :skuId
+    		</#if>
+    		<#if schId?exists && schId!="">
+    			and SCH_ID = :schId
+    		</#if>
+    	]]>
+    </sql>
+    
+     <sql id="selectBySkuId">
+    	<![CDATA[
+    		select a.ID as id,SPU_ID as spuId,SKU_ID as skuId,SCH_ID as schId,SUPP_ID as suppId,GOODS_TITLE as goodsTitle,GOODS_IMG as goodsImg,
+    			FAVORABLE_PRICE as favorablePrice,ORIGINAL_PRICE as originalPrice,MIN_ORDER as minOrder,GOODS_COUNT as goodsCount,
+    			MAX_PURCHASE as maxPurchase,FIRST_NAVID as firstNavId,EM_OFF_SHELF as emOffShelf,a.UPDATE_TIME as updateTime,a.UPDATE_USER_ID as updateUserId,b.PLATFORM_ID as platformId
+    		from market_activity_goods a,market_schedule b where a.SCH_ID=b.ID
+    		
+    		<#if id?exists && id!="">
+    			and a.ID = :id
+    		</#if>
+    		<#if skuId?exists && skuId!="">
+    			and a.SKU_ID = :skuId
+    		</#if>
+    		<#if schId?exists && schId!="">
+    			and a.SCH_ID = :schId
+    		</#if>
+    	]]>
+    </sql>
+    
+    
+    <sql id="selectForOffShelf">
+    	<![CDATA[
+    		select t1.ID as id,t1.SPU_ID as spuId,t1.SKU_ID as skuId,t1.SCH_ID as schId,t1.SUPP_ID as suppId,t1.GOODS_TITLE as goodsTitle,t1.GOODS_IMG as goodsImg,
+		t1.FAVORABLE_PRICE as favorablePrice,t1.ORIGINAL_PRICE as originalPrice,t1.MIN_ORDER as minOrder,t1.GOODS_COUNT as goodsCount,
+		t1.MAX_PURCHASE as maxPurchase,t1.FIRST_NAVID as firstNavId,t1.EM_OFF_SHELF as emOffShelf,t1.UPDATE_TIME as updateTime,t1.UPDATE_USER_ID as updateUserId,
+		t2.SCH_START_TIME as schStartTime,t2.SCH_END_TIME as schEndTime,t3.TITLE as actTitle
+		from market_activity_goods t1 LEFT JOIN MARKET_SCHEDULE t2 on t1.SCH_ID = t2.ID LEFT JOIN market_platform t3 on t3.ID = t2.PLATFORM_ID 
+		where (t1.SKU_ID LIKE concat('%',:code,'%') or t1.GOODS_TITLE like concat('%',:code,'%')) and t2.SCH_END_TIME >= :time GROUP BY t1.ID
+    	]]>
+    </sql>
+    
+       <sql id="updateBySkuId">
+    	<![CDATA[
+    		update market_activity_goods set 
+    			EM_OFF_SHELF = :emOffShelf
+    	    	,UPDATE_TIME = :updateTime
+    	    	,UPDATE_USER_ID = :updateUserId 
+    	    WHERE SKU_ID = :skuId
+    	]]>
+    </sql>
+    
+    
+    <sql id="update">
+    	<![CDATA[
+    		update market_activity_goods set EM_OFF_SHELF = :emOffShelf
+    	   	<#if goodsCount?exists && goodsCount!="">
+    	    	,GOODS_COUNT = :goodsCount
+    	   	</#if>
+    	   	<#if maxPurchase?exists && maxPurchase!="">
+    	    	,MAX_PURCHASE = :maxPurchase
+    	   	</#if>
+    	   	<#if updateTime?exists && updateTime!="">
+    	    	,UPDATE_TIME = :updateTime
+    	   	</#if>
+    	   	<#if updateUserId?exists && updateUserId!="">
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   	</#if>
+    	    WHERE ID = :id
+    	]]>
+    </sql>
+    
+    <sql id="delete">
+    	<![CDATA[
+    		delete from market_activity_goods where SCH_ID = :schId
+    	]]>
+    </sql>
+    
+    
+    
+</sqlMap>

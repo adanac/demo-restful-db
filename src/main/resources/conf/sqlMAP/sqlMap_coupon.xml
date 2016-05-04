@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="coupon">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into coupon
+				  (ID,RULE_ID,SUPPID,NO,FACE_VALUE,START_TIME,END_TIME,SATISFY_MONEY,MEMBER_ID,STATUS,UPDATE_TIME,UPDATE_USER_ID,CREATE_TIME,CREATE_USER_ID)
+			values(:id,:ruleId,:suppId,:no,:faceValue,:startTime,:endTime,:satisfyMoney,:memberId,:status,:updateTime,:updateUserId,:createTime,:createUserId)
+		]]>
+    </sql>
+    
+    <sql id="select">
+    	<![CDATA[
+    		SELECT * FROM 
+			(
+				SELECT
+				a.ID,
+				a.RULE_ID AS ruleId,
+				a.SUPPID AS suppId,
+				a.NO,
+				a.FACE_VALUE AS faceValue,
+				a.START_TIME AS startTime,
+				a.END_TIME AS endTime,
+				a.SATISFY_MONEY AS satisfyMoney,
+				a.MEMBER_ID AS memberId,
+			
+				a.UPDATE_TIME AS updateTime,
+				a.UPDATE_USER_ID AS updateUserId,
+				a.CREATE_TIME AS createTime,
+				a.CREATE_USER_ID,
+				a.USED_TIME AS createUserId,
+				a.CHANNEL,
+				b.type,
+				b.name as ruleName,
+				CASE WHEN a.STATUS = 1 AND ( ( NOW() BETWEEN a.START_TIME AND a.END_TIME ) OR (NOW() < a.START_TIME) ) THEN 1 /*未使用*/
+					  WHEN a.STATUS = 2 AND ( ( NOW() BETWEEN a.START_TIME AND a.END_TIME ) OR (NOW() < a.START_TIME) ) THEN 2 /*已使用*/
+					  WHEN ( (a.STATUS = 3) OR (NOW() > a.END_TIME) ) THEN 3 END `STATUS` /*已过期*/
+		 
+			 from coupon a ,coupon_rule b where 1=1  and a.RULE_ID=b.id 
+	    		<#if id?exists && id!="">
+	    			and a.ID = :id
+	    		</#if>
+	    		<#if ruleId?exists && ruleId!="">
+	    			and a.RULE_ID = :ruleId
+	    		</#if>
+	    		<#if startTime?exists && startTime!="" && endTime?exists && endTime!="">
+	    			and ((a.START_TIME >= :startTime and a.START_TIME <= :endTime) or 
+	    			(a.END_TIME >= :startTime and a.END_TIME <= :endTime) or 
+	    			(a.START_TIME <= :startTime and a.END_TIME >= :endTime) or 
+	    			(a.START_TIME >= :startTime and a.END_TIME <= :endTime))
+	    		</#if>
+	    		<#if no?exists && no!="">
+	    			and a.NO=:no
+	    		</#if>
+	    		<#if memberId?exists && memberId!="">
+	    			and a.MEMBER_ID=:memberId
+	    		</#if>
+    		) m
+   		 	where 1=1
+    		 <#if status?exists && status!="">
+    			and m.STATUS = :status
+    		</#if>
+    		order by m.updateTime desc 
+		]]>
+    </sql>
+    
+   
+    <sql id="updateToUse">
+    	<![CDATA[
+    		update coupon set
+    	    	STATUS = :status
+    	    	,USED_TIME = :usedTime
+    	    	,CHANNEL = :channel
+    	    	,UPDATE_TIME = :updateTime
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   WHERE NO = :no
+		]]>
+    </sql>
+     <sql id="updateToBack">
+    	<![CDATA[
+    		update coupon set
+    	    	STATUS = :status
+    	    	,USED_TIME = null
+    	    	,CHANNEL = null
+    	    	,UPDATE_TIME = :updateTime
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   WHERE NO = :no
+		]]>
+    </sql>
+    
+</sqlMap>

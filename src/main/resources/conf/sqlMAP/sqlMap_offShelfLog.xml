@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="offShelfLog">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into market_off_shelf_log
+				  (ID,PLATFORM_ID,SCH_ID,OPER_TYPE,OPER_DATE,OPER_USER_ID,OPER_USER_NAME,SKU_ID)
+			values(:id,:platformId,:schId,:operType,:operDate,:operUserId,:operUserName,:skuId)
+		]]>
+    </sql>
+    
+    <sql id="select">
+    	<![CDATA[
+    		select ID as id,PLATFORM_ID as platformId,SCH_ID as schId,OPER_TYPE as operType,OPER_DATE as operDate,
+    		OPER_USER_ID as operUserId,OPER_USER_NAME as operUserName,SKU_ID as skuId
+    		from market_off_shelf_log where 1=1
+    		<#if platformId?exists && platformId!="">
+    			and PLATFORM_ID = :platformId
+    		</#if>
+    		<#if schId?exists && schId!="">
+    			and SCH_ID = :schId
+    		</#if>
+    		<#if skuId?exists && skuId!="">
+    			and SKU_ID = :skuId
+    		</#if>
+    	]]>
+    </sql>
+	
+    
+</sqlMap>

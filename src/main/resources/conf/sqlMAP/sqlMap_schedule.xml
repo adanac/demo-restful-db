@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="schedule">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into MARKET_SCHEDULE
+				  (ID,PLATFORM_ID,SCH_START_TIME,SCH_END_TIME,REG_START_TIME,REG_END_TIME,ADVANCE_DAYS,ADVANCE_END_DAYS,SCH_GOODS_NUM,STATUS,UPDATE_TIME,UPDATE_USER_ID)
+			values(:id,:platformId,:schStartTime,:schEndTime,:regStartTime,:regEndTime,:advanceDays,:advanceEndDays,:schGoodsNum,:status,:updateTime,:updateUserId)
+		]]>
+    </sql>
+   
+    <sql id="select">
+    	<![CDATA[
+			 SELECT a.ID AS id,a.PLATFORM_ID AS platformId,a.SCH_START_TIME AS schStartTime,a.SCH_END_TIME AS schEndTime,REG_START_TIME AS regStartTime,
+			 		a.REG_END_TIME AS regEndTime,a.ADVANCE_DAYS AS advanceDays,a.ADVANCE_END_DAYS AS advanceEndDays,a.SCH_GOODS_NUM AS schGoodsNum,a.STATUS AS STATUS,a.UPDATE_TIME AS updateTime,
+			 		a.UPDATE_USER_ID AS updateUserId,b.GOODS_NUM AS goodsNum
+			FROM MARKET_SCHEDULE a,market_platform b
+			WHERE 1=1 AND a.PLATFORM_ID =b.id 
+    		<#if id?exists && id!="">
+    			and a.ID = :id
+    		</#if>
+    		<#if platformId?exists && platformId!="">
+    			and a.PLATFORM_ID = :platformId
+    		</#if>
+    		<#if schStartTime?exists && schStartTime!="" && schEndTime?exists && schEndTime!="">
+    			and ((a.SCH_START_TIME >= :schStartTime and a.SCH_START_TIME <= :schEndTime) or
+    				(a.SCH_END_TIME >= :schStartTime and a.SCH_END_TIME <= :schEndTime) or
+    				(a.SCH_START_TIME <= :schStartTime and a.SCH_END_TIME >= :schEndTime) or
+    				(a.SCH_START_TIME >= :schStartTime and a.SCH_END_TIME <= :schEndTime))
+    		</#if>
+    		<#if regStartTime?exists && regStartTime!="">
+    			and a.REG_START_TIME <= :regStartTime
+    		</#if>
+    		<#if regEndTime?exists && regEndTime!="">
+    			and a.REG_END_TIME >= :regEndTime
+    		</#if>
+    		<#if status?exists && status!="">
+    			and a.STATUS = :status
+    		</#if>
+    		order by a.SCH_START_TIME asc
+		]]>
+    </sql>
+    
+    <sql id="count">
+    	<![CDATA[
+    		select count(ID) from MARKET_SCHEDULE where 1=1  
+    			and PLATFORM_ID = :platformId
+    			and ((SCH_START_TIME >= :schStartTime and SCH_START_TIME <= :schEndTime) or 
+    			(SCH_END_TIME >= :schStartTime and SCH_END_TIME <= :schEndTime) or 
+    			(SCH_START_TIME <= :schStartTime and SCH_END_TIME >= :schEndTime) or 
+    			(SCH_START_TIME >= :schStartTime and SCH_END_TIME <= :schEndTime))
+    			and STATUS = 1
+    			<#if id?exists && id!="">
+		   			and ID != :id
+		   		</#if>
+    		order by SCH_START_TIME asc
+		]]>
+    </sql>
+    
+    <sql id="update">
+    	<![CDATA[
+    		update MARKET_SCHEDULE set ID = :id
+    		<#if schStartTime?exists && schStartTime!="">
+    	    	,SCH_START_TIME = :schStartTime
+    	   	</#if>
+    	   	<#if schEndTime?exists && schEndTime!="">
+    	    	,SCH_END_TIME = :schEndTime
+    	   	</#if>
+    	   	<#if regStartTime?exists && regStartTime!="">
+    	    	,REG_START_TIME = :regStartTime
+    	   	</#if>
+    	   	<#if regEndTime?exists && regEndTime!="">
+    	    	,REG_END_TIME = :regEndTime
+    	   	</#if>
+    	   	<#if advanceDays?exists && advanceDays!="">
+    	    	,ADVANCE_DAYS = :advanceDays
+    	   	</#if>
+    	   	<#if advanceEndDays?exists && advanceEndDays!="">
+    	    	,ADVANCE_END_DAYS = :advanceEndDays
+    	   	</#if>
+    	   	<#if schGoodsNum?exists && schGoodsNum!="">
+    	    	,SCH_GOODS_NUM = :schGoodsNum
+    	   	</#if>
+    	   	<#if status?exists && status!="">
+    	    	,STATUS = :status
+    	   	</#if>
+    	   	<#if updateTime?exists && updateTime!="">
+    	    	,UPDATE_TIME = :updateTime
+    	   	</#if>
+    	   	<#if updateUserId?exists && updateUserId!="">
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   	</#if>
+    	    WHERE ID = :id
+		]]>
+    </sql>
+    
+    <sql id="delete">
+    	<![CDATA[
+    		delete from MARKET_SCHEDULE where 
+    		<#if id?exists && id!="">
+    			ID = :id
+    		</#if>
+    		<#if platformId?exists && platformId!="">
+    			PLATFORM_ID = :platformId
+    		</#if>
+		]]>
+    </sql>
+    
+    <sql id="selectSchByGoodsId">
+    	<![CDATA[
+    		select t1.ID as id,t1.PLATFORM_ID as platformId,t1.SCH_START_TIME as schStartTime,t1.SCH_END_TIME as schEndTime,t1.REG_START_TIME as regStartTime,
+    				t1.REG_END_TIME as regEndTime,t1.ADVANCE_DAYS as advanceDays,t1.ADVANCE_END_DAYS as advanceEndDays,t1.SCH_GOODS_NUM as schGoodsNum,t1.STATUS as status,
+			        t1.UPDATE_TIME as updateTime,t1.UPDATE_USER_ID as updateUserId
+			from MARKET_SCHEDULE t1 LEFT JOIN market_activity_goods t2 
+			on t1.ID = t2.SCH_ID where t2.GOODS_ID = :goodsId
+		]]>
+    </sql>
+    
+    <sql id="selectSchByApplyGoodsId">
+    	<![CDATA[
+    		select t1.ID as id,t1.PLATFORM_ID as platformId,t1.SCH_START_TIME as schStartTime,t1.SCH_END_TIME as schEndTime,t1.REG_START_TIME as regStartTime,
+    				t1.REG_END_TIME as regEndTime,t1.ADVANCE_DAYS as advanceDays,t1.ADVANCE_END_DAYS as advanceEndDays,t1.SCH_GOODS_NUM as schGoodsNum,t1.STATUS as status,
+			        t1.UPDATE_TIME as updateTime,t1.UPDATE_USER_ID as updateUserId
+			from MARKET_SCHEDULE t1 
+			where t1.id in (
+				select t2.SCH_ID from MARKET_APPLY t2 where t2.id in 
+				(select t3.APPLY_ID from market_apply_goods t3 where t3.GOODS_ID = :goodsId)
+			)
+		]]>
+    </sql>
+    
+     <sql id="selectByApproval">
+    	<![CDATA[
+    		select ID as id,PLATFORM_ID as platformId,SCH_START_TIME as schStartTime,SCH_END_TIME as schEndTime,REG_START_TIME as regStartTime,
+    		REG_END_TIME as regEndTime,ADVANCE_DAYS as advanceDays,ADVANCE_END_DAYS as advanceEndDays,SCH_GOODS_NUM as schGoodsNum,STATUS as status,UPDATE_TIME as updateTime,
+    		UPDATE_USER_ID as updateUserId
+    		 from MARKET_SCHEDULE where 1=1  
+    		 and ID in (select SCH_ID from MARKET_APPLY group by SCH_ID)
+    		<#if id?exists && id!="">
+    			and ID = :id
+    		</#if>
+    		<#if platformId?exists && platformId!="">
+    			and PLATFORM_ID = :platformId
+    		</#if>
+    		<#if schStartTime?exists && schStartTime!="">
+    			and SCH_START_TIME >= :schStartTime
+    		</#if>
+    		<#if schEndTime?exists && schEndTime!="">
+    			and SCH_END_TIME <= :schEndTime
+    		</#if>
+    		<#if regStartTime?exists && regStartTime!="">
+    			and REG_START_TIME >= :regStartTime
+    		</#if>
+    		<#if regEndTime?exists && regEndTime!="">
+    			and REG_END_TIME <= :regEndTime
+    		</#if>
+    		<#if status?exists && status!="">
+    			and STATUS = :status
+    		</#if>
+    		order by SCH_START_TIME asc
+		]]>
+    </sql>
+    
+    <sql id="selectRegisterScheduleBySupp">
+    	<![CDATA[
+    		select ID as id,PLATFORM_ID as platformId,SCH_START_TIME as schStartTime,SCH_END_TIME as schEndTime,REG_START_TIME as regStartTime,
+    		REG_END_TIME as regEndTime,ADVANCE_DAYS as advanceDays,ADVANCE_END_DAYS as advanceEndDays,SCH_GOODS_NUM as schGoodsNum,STATUS as status,UPDATE_TIME as updateTime,
+    		UPDATE_USER_ID as updateUserId
+    		from MARKET_SCHEDULE WHERE id in (
+				select t1.SCH_ID from MARKET_APPLY t1 where t1.PLATFORM_ID = :platformId and t1.SUPP_ID = :suppId
+			)
+		]]>
+    </sql>
+    
+    <sql id="countByActIdAndStatus">
+    	<![CDATA[
+    		select count(ID) as count
+    		from MARKET_SCHEDULE WHERE PLATFORM_ID = :actId and STATUS = :status
+		]]>
+    </sql>
+    
+    
+    
+    
+    
+    
+    
+    
+   <sql id="queryCanApplyScheduleList">
+    	<![CDATA[
+			SELECT a.ID AS id,a.PLATFORM_ID AS platformId,a.SCH_START_TIME AS schStartTime,a.SCH_END_TIME AS schEndTime,a.REG_START_TIME AS regStartTime,
+			 		a.REG_END_TIME AS regEndTime,a.ADVANCE_DAYS AS advanceDays,ADVANCE_END_DAYS AS advanceEndDays,SCH_GOODS_NUM AS schGoodsNum, a.STATUS AS STATUS,a.UPDATE_TIME AS updateTime,
+			 		a.UPDATE_USER_ID AS updateUserId
+			FROM MARKET_SCHEDULE a
+			WHERE a.id not in (select SCH_ID from MARKET_APPLY where SUPP_ID=:suppId and PLATFORM_ID=:platformId)
+			AND a.PLATFORM_ID=:platformId 
+			AND a.status=:status
+			and REG_START_TIME<=:nowTime and REG_END_TIME>=:nowTime
+			order by a.SCH_START_TIME asc
+
+		]]>
+    </sql>
+    
+     <sql id="queryApplyedScheduleList">
+    	<![CDATA[
+    		SELECT a.ID AS id,a.PLATFORM_ID AS platformId,a.SCH_START_TIME AS schStartTime,a.SCH_END_TIME AS schEndTime,a.REG_START_TIME AS regStartTime,
+						 		a.REG_END_TIME AS regEndTime,a.ADVANCE_DAYS AS advanceDays,a.ADVANCE_END_DAYS AS advanceEndDays,a.SCH_GOODS_NUM AS schGoodsNum, a.STATUS AS STATUS,a.UPDATE_TIME AS updateTime,
+						 		a.UPDATE_USER_ID AS updateUserId,b.status as applyStatus,b.REJECT_REASON as rejectReason
+			FROM MARKET_SCHEDULE a,MARKET_APPLY b
+			WHERE a.id=b.SCH_ID AND a.PLATFORM_ID=:platformId AND b.SUPP_ID=:suppId 
+			order by a.SCH_START_TIME asc
+		]]>
+    </sql>
+    
+     <sql id="queryRepeatScheduleList">
+    	<![CDATA[
+   			SELECT a.ID AS id,a.PLATFORM_ID AS platformId,a.SCH_START_TIME AS schStartTime,a.SCH_END_TIME AS schEndTime,a.REG_START_TIME AS regStartTime,
+						 		a.REG_END_TIME AS regEndTime,a.ADVANCE_DAYS AS advanceDays,a.ADVANCE_END_DAYS AS advanceEndDays,a.SCH_GOODS_NUM AS schGoodsNum, a.STATUS AS STATUS,a.UPDATE_TIME AS updateTime,
+						 		a.UPDATE_USER_ID AS updateUserId
+			FROM MARKET_SCHEDULE a,MARKET_SCHEDULE b
+			WHERE b.id=:scheId AND a.status=1 and a.id!=:scheId
+			and (
+					(b.SCH_START_TIME>=a.SCH_START_TIME and b.SCH_START_TIME<=a.SCH_END_TIME)
+					or (b.SCH_END_TIME>=a.SCH_START_TIME and b.SCH_END_TIME<=a.SCH_END_TIME)
+					or (b.SCH_START_TIME<=a.SCH_START_TIME and b.SCH_END_TIME>=a.SCH_END_TIME)
+					or (b.SCH_START_TIME>=a.SCH_START_TIME and b.SCH_END_TIME<=a.SCH_END_TIME)
+				)
+		]]>
+    </sql>
+    
+    
+    
+     <sql id="updateScheduleNumber">
+    	<![CDATA[
+    		update MARKET_SCHEDULE set 
+    	    	SCH_GOODS_NUM = SCH_GOODS_NUM+:schGoodsNum ,UPDATE_TIME = :updateTime ,UPDATE_USER_ID = :updateUserId
+    	    WHERE ID = :id
+		]]>
+    </sql>
+    
+</sqlMap>

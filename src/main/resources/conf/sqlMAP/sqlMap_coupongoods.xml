@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="coupongoods">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into coupon_goods
+				  (RULE_ID,SKU_ID,SPU_ID,NAME,BARCODE)
+			values(:ruleId,:skuId,:spuId,:name,:barCode)
+		]]>
+    </sql>
+    
+    <sql id="delete">
+    	<![CDATA[
+    		delete from coupon_goods where RULE_ID=:ruleId
+		]]>
+    </sql>
+    
+     <sql id="select">
+    	<![CDATA[
+    		select RULE_ID as ruleId,SKU_ID as skuId,SPU_ID as spuId,NAME,BARCODE as barCode 
+    		from coupon_goods 
+    		where RULE_ID=:ruleId
+		]]>
+    </sql>
+    
+</sqlMap>

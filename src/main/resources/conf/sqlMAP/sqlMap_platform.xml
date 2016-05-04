@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="platform">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into market_platform
+				  (ID,TITLE,URL,DESCRIPE,IMG,INFO,START_TIME,END_TIME,STATUS,GOODS_NUM,MAX_ENTRY_NUM,BOND,FREE_SHiPP,DELIVER_GOODS_TIME,
+				  ACTUAL_END_TIME,UPDATE_TIME,UPDATE_USER_ID,CREATE_USER_ID,CREATE_TIME,MULTI_SCHE)
+			values(:id,:title,:url,:descripe,:img,:info,:startTime,:endTime,:status,:goodsNum,:maxEntryNum,:bond,:freeShipp,:deliverGoodsTime,
+				  :actualEndTime,:updateTime,:updateUserId,:createUserId,:createTime,:multiSche)
+		]]>
+    </sql>
+    
+    <sql id="select">
+    	<![CDATA[
+    		select t1.ID as id,t1.TITLE as title,t1.IMG as img,t1.url as url,t1.info as info,t1.DESCRIPE as descripe,t1.START_TIME as startTime,t1.END_TIME as endTime,t1.STATUS as status,
+    		t1.GOODS_NUM as goodsNum,t1.MAX_ENTRY_NUM as maxEntryNum,t1.BOND as bond,t1.FREE_SHiPP as freeShipp,t1.DELIVER_GOODS_TIME as deliverGoodsTime,
+    		t1.ACTUAL_END_TIME as actualEndTime,t1.UPDATE_TIME as updateTime,t1.UPDATE_USER_ID as updateUserId,t1.MULTI_SCHE as multiSche
+    		 from market_platform t1 left join MARKET_CATEGORY t2 on t1.ID = t2.PLATFORM_ID where 1=1  
+    		<#if id?exists && id!="">
+    			and t1.ID = :id
+    		</#if>
+    		<#if title?exists && title!="">
+    			and t1.TITLE  like CONCAT('%', :title, '%')
+    		</#if>
+    		<#if startTime?exists && startTime!="" && endTime?exists && endTime!="">
+    			and ((t1.START_TIME >= :startTime and t1.START_TIME <= :endTime) or 
+    			(t1.END_TIME >= :startTime and t1.END_TIME <= :endTime) or 
+    			(t1.START_TIME <= :startTime and t1.END_TIME >= :endTime) or 
+    			(t1.START_TIME >= :startTime and t1.END_TIME <= :endTime))
+    		</#if>
+    		<#if status?exists && status!="">
+    			and t1.STATUS = :status
+    		</#if>
+    		<#if navId?exists && navId!="">
+    			and t2.CATEGORY_ID in (${navId})
+    		</#if>
+    		group by t1.ID order by t1.UPDATE_TIME desc 
+		]]>
+    </sql>
+    
+    <sql id="selectPlatformByPageAndTime">
+    	<![CDATA[
+    		select t1.ID as id,t1.TITLE as title,t1.IMG as img,t1.url as url,t1.info as info,t1.DESCRIPE as descripe,t1.START_TIME as startTime,t1.END_TIME as endTime,t1.STATUS as status,
+    		t1.GOODS_NUM as goodsNum,t1.MAX_ENTRY_NUM as maxEntryNum,t1.BOND as bond,t1.FREE_SHiPP as freeShipp,t1.DELIVER_GOODS_TIME as deliverGoodsTime,
+    		t1.ACTUAL_END_TIME as actualEndTime,t1.UPDATE_TIME as updateTime,t1.UPDATE_USER_ID as updateUserId,t1.MULTI_SCHE as multiSche
+    		 from market_platform t1 left join MARKET_CATEGORY t2 on t1.ID = t2.PLATFORM_ID where 1=1  
+    		<#if id?exists && id!="">
+    			and t1.ID = :id
+    		</#if>
+    		<#if title?exists && title!="">
+    			and t1.TITLE  like CONCAT('%', :title, '%')
+    		</#if>
+    		<#if startTime?exists && startTime!="">
+    			and t1.START_TIME <= :startTime
+    		</#if>
+    		<#if endTime?exists && endTime!="">
+    			and  t1.END_TIME >= :endTime
+    		</#if>
+    		<#if status?exists && status!="">
+    			and t1.STATUS = :status
+    		</#if>
+    		<#if category?exists && category!="">
+    			and t2.CATEGORY in (${category})
+    		</#if>
+    		group by t1.ID order by t1.UPDATE_TIME desc 
+		]]>
+    </sql>
+    
+    <sql id="count">
+    	<![CDATA[
+    		select count(ID) from market_platform  where 1=1  
+    			and ID = :id
+    			and START_TIME <= :startTime
+    			and END_TIME >= :endTime
+		]]>
+    </sql>
+	
+	<sql id="update">
+    	<![CDATA[
+    		update market_platform set ID = :id
+    		<#if title?exists && title!="">
+    	    	,TITLE = :title
+    	   	</#if>
+    	   	<#if info?exists && info!="">
+    	    	,INFO = :info
+    	   	</#if>
+    	   	<#if descripe?exists && descripe!="">
+    	    	,DESCRIPE = :descripe
+    	   	</#if>
+    	   	<#if img?exists && img!="">
+    	    	,IMG = :img
+    	   	</#if>
+    	   	<#if startTime?exists && startTime!="">
+    	    	,START_TIME = :startTime
+    	   	</#if>
+    	   	<#if endTime?exists && endTime!="">
+    	    	,END_TIME = :endTime
+    	   	</#if>
+    	   	<#if status?exists && status!="">
+    	    	,STATUS = :status
+    	   	</#if>
+    	   	<#if goodsNum?exists && goodsNum!="">
+    	    	,GOODS_NUM = :goodsNum
+    	   	</#if>
+    	   	<#if maxEntryNum?exists && maxEntryNum!="">
+    	    	,MAX_ENTRY_NUM = :maxEntryNum
+    	   	</#if>
+    	   	<#if bond?exists && bond!="">
+    	    	,BOND = :bond
+    	   	</#if>
+    	   	<#if freeShipp?exists && freeShipp!="">
+    	    	,FREE_SHiPP = :freeShipp
+    	   	</#if>
+    	   	<#if deliverGoodsTime?exists && deliverGoodsTime!="">
+    	    	,DELIVER_GOODS_TIME = :deliverGoodsTime
+    	   	</#if>
+    	   	<#if actualEndTime?exists && actualEndTime!="">
+    	    	,ACTUAL_END_TIME = :actualEndTime
+    	   	</#if>
+    	   	<#if updateTime?exists && updateTime!="">
+    	    	,UPDATE_TIME = :updateTime
+    	   	</#if>
+    	   	<#if updateUserId?exists && updateUserId!="">
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   	</#if>
+    	   WHERE ID = :id
+		]]>
+    </sql>
+    
+    <sql id="delete">
+    	<![CDATA[
+    		delete from market_platform 
+    	    WHERE ID = :id
+		]]>
+    </sql>
+    
+    <sql id="selectCategoryByPlatformId">
+    	<![CDATA[
+    		select ID as id,PLATFORM_ID as platformId,CATEGORY as category,CATEGORY_NAME as categoryName from MARKET_CATEGORY where PLATFORM_ID = :platformId
+		]]>
+    </sql>
+    
+    <sql id="selectBySuppId">
+    	<![CDATA[
+    		SELECT t1.ID AS id,t1.TITLE AS title,t1.INFO AS info,t1.IMG AS img,t1.START_TIME AS startTime,t1.END_TIME AS endTime,t1.STATUS AS STATUS,
+ 		t1.GOODS_NUM AS goodsNum,t1.MAX_ENTRY_NUM AS maxEntryNum,t1.BOND AS bond,t1.FREE_SHiPP AS freeShipp,t1.DELIVER_GOODS_TIME AS deliverGoodsTime,
+ 		t1.ACTUAL_END_TIME AS actualEndTime,t1.UPDATE_TIME AS updateTime,t1.UPDATE_USER_ID AS updateUserId,t1.MULTI_SCHE as multiSche
+			FROM market_platform t1
+			where 1=1  and t1.status=2
+			and t1.ID in (select PLATFORM_ID from MARKET_APPLY where SUPP_ID = :suppId)
+			
+		]]>
+    </sql>
+    
+     <sql id="selectProcessing">
+    	<![CDATA[
+    		SELECT t1.ID AS id,t1.TITLE AS title,t1.INFO AS info,t1.IMG AS img,t1.START_TIME AS startTime,t1.END_TIME AS endTime,t1.STATUS AS STATUS,
+ 		t1.GOODS_NUM AS goodsNum,t1.MAX_ENTRY_NUM AS maxEntryNum,t1.BOND AS bond,t1.FREE_SHiPP AS freeShipp,t1.DELIVER_GOODS_TIME AS deliverGoodsTime,
+ 		t1.ACTUAL_END_TIME AS actualEndTime,t1.UPDATE_TIME AS updateTime,t1.UPDATE_USER_ID AS updateUserId,t1.MULTI_SCHE as multiSche, 'false' as 'applyed'
+			FROM market_platform t1
+			where 1=1
+			and t1.status=2
+			and t1.END_TIME >= :nowTime
+			and t1.ID not in(select PLATFORM_ID from MARKET_APPLY where SUPP_ID = :suppId)
+			
+			union all
+				SELECT t1.ID AS id,t1.TITLE AS title,t1.INFO AS info,t1.IMG AS img,t1.START_TIME AS startTime,t1.END_TIME AS endTime,t1.STATUS AS STATUS,
+ 		t1.GOODS_NUM AS goodsNum,t1.MAX_ENTRY_NUM AS maxEntryNum,t1.BOND AS bond,t1.FREE_SHiPP AS freeShipp,t1.DELIVER_GOODS_TIME AS deliverGoodsTime,
+ 		t1.ACTUAL_END_TIME AS actualEndTime,t1.UPDATE_TIME AS updateTime,t1.UPDATE_USER_ID AS updateUserId,t1.MULTI_SCHE as multiSche, 'true' as 'applyed'
+			FROM market_platform t1
+			where 1=1 and t1.status=2
+			and t1.ID in (select PLATFORM_ID from MARKET_APPLY where SUPP_ID = :suppId)
+		]]>
+    </sql>
+    
+    
+    <sql id="selectByApproval">
+    	<![CDATA[
+    		select t1.ID as id,t1.TITLE as title,t1.DETAIL as detail,t1.IMG as img,t1.START_TIME as startTime,t1.END_TIME as endTime,t1.STATUS as status,
+    		t1.GOODS_NUM as goodsNum,t1.MAX_ENTRY_NUM as maxEntryNum,t1.BOND as bond,t1.FREE_SHiPP as freeShipp,t1.DELIVER_GOODS_TIME as deliverGoodsTime,
+    		t1.ACTUAL_END_TIME as actualEndTime,t1.UPDATE_TIME as updateTime,t1.UPDATE_USER_ID as updateUserId,t1.MULTI_SCHE as multiSche
+    		 from market_platform t1 left join MARKET_CATEGORY t2 on t1.ID = t2.PLATFORM_ID where 1=1  
+    		 and t1.ID in (select t3.PLATFORM_ID from MARKET_APPLY t3 group by t3.PLATFORM_ID)
+    		<#if id?exists && id!="">
+    			and t1.ID = :id 
+    		</#if>
+    		<#if title?exists && title!="">
+    			and t1.TITLE  like CONCAT('%', :title, '%') 
+    		</#if>
+    		<#if startTime?exists && startTime!="">
+    			and t1.START_TIME >= :startTime 
+    		</#if>
+    		<#if endTime?exists && endTime!="">
+    			and t1.END_TIME <= :endTime 
+    		</#if>
+    		<#if status?exists && status!="">
+    			and t1.STATUS = :status 
+    		</#if>
+    		<#if category?exists && category!="">
+    			and t2.CATEGORY in (${category}) 
+    		</#if>
+    		group by t1.ID order by t1.UPDATE_TIME desc 
+		]]>
+    </sql>
+</sqlMap>

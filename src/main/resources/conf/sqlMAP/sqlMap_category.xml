@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="category">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into MARKET_CATEGORY
+				  (ID,PLATFORM_ID,CATEGORY_ID,CATEGORY_NAME)
+			values(:id,:platformId,:categoryId,:categoryName)
+		]]>
+    </sql>
+    
+    <sql id="select">
+    	<![CDATA[
+    		select ID as id,PLATFORM_ID as platformId,CATEGORY_ID as categoryId,CATEGORY_NAME as categoryName
+    		from MARKET_CATEGORY where PLATFORM_ID = :platformId
+    	]]>
+    </sql>
+    
+    <sql id="delete">
+    	<![CDATA[
+    		delete from MARKET_CATEGORY where ID = :id
+    	]]>
+    </sql>
+    
+    <sql id="deleteByPlatformId">
+    	<![CDATA[
+    		delete from MARKET_CATEGORY where PLATFORM_ID = :platformId
+    	]]>
+    </sql>
+    
+</sqlMap>

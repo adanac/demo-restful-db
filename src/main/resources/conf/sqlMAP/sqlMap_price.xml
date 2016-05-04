@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="price">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into MARKET_CMMDTY_PRICE
+				  (ID,CMMDTY_ID,PRICE,DESPOSIT_REATE,MIN_NUM,MAX_NUM)
+			values(:id,:cmmdtyId,:price,:despositReate,:minNum,:maxNum)
+		]]>
+    </sql>
+    
+    <sql id="selectByParam">
+    	<![CDATA[
+    		select ID as id,SUPPLIER_ID as supplierId,NAME as name,START_DTTM as startDttm,END_DTTM as endDttm,DISCOUNT_TYPE as discountType,
+    		STATE as state,CREATE_DTTM as createDttm,LAST_DTTM as lastDttm,LAST_PER as lastPer 
+    		from MARKET_LIMITED where 1=1 
+    		<#if id?exists && id!="">
+    			and ID = :id
+    		</#if>
+    		<#if supplierId?exists && supplierId!="">
+    			and SUPPLIER_ID = :supplierId
+    		</#if>
+    		<#if state?exists && state!="">
+    			and STATE = :state
+    		</#if>
+    		<#if name?exists && name!="">
+    			and NAME like CONCAT('%', :name, '%')
+    		</#if>
+    		<#if startDttm?exists && startDttm!="" && endDttm?exists && endDttm!="">
+    	    	and ((START_DTTM >= :startDttm and START_DTTM <= :endDttm) 
+    				or (END_DTTM >= :startDttm and END_DTTM <= :endDttm) 
+    				or (START_DTTM <= :startDttm and END_DTTM >= :endDttm)
+    				or (START_DTTM >= :startDttm and END_DTTM <= :endDttm))
+    	   	</#if>
+    		<#if state?exists && state!="">
+    			and STATUS <= :state
+    		</#if>
+    		order by START_DTTM asc
+		]]>
+    </sql>
+    
+    <sql id="selectByParamAdd">
+    	<![CDATA[
+    		select ID as id,SUPPLIER_ID as supplierId,NAME as name,START_DTTM as startDttm,END_DTTM as endDttm,DISCOUNT_TYPE as discountType,
+    		STATE as state,CREATE_DTTM as createDttm,LAST_DTTM as lastDttm,LAST_PER as lastPer 
+    		from MARKET_LIMITED where 1=1 
+    		<#if name?exists && name!="">
+    			and NAME = :name
+    		</#if>
+    		<#if startDttm?exists && startDttm!="">
+    			and START_DTTM = :startDttm
+    		</#if>
+    		<#if endDttm?exists && endDttm!="">
+    			and END_DTTM = :endDttm
+    		</#if>
+    		order by START_DTTM asc
+		]]>
+    </sql>
+	
+	<sql id="updateById">
+    	<![CDATA[
+    		update MARKET_LIMITED set ID = :id 
+    		<#if supplierId?exists && supplierId!="">
+    			, SUPPLIER_ID = :supplierId
+    		</#if>
+    		<#if name?exists && name!="">
+    			, NAME = :name
+    		</#if>
+    		<#if startDttm?exists && startDttm!="">
+    			, START_DTTM = :startDttm
+    		</#if>
+    		<#if endDttm?exists && endDttm!="">
+    			, END_DTTM = :endDttm
+    		</#if>
+    		<#if discountType?exists && discountType!="">
+    			, DISCOUNT_TYPE = :discountType
+    		</#if>
+    		<#if lastDttm?exists && lastDttm!="">
+    			, LAST_DTTM = :lastDttm
+    		</#if>
+    		<#if lastPer?exists && lastPer!="">
+    			, LAST_PER = :lastPer
+    		</#if>
+    		<#if url?exists && url!="">
+    			, URL = :url
+    		</#if>
+    		<#if img?exists && img!="">
+    			, IMG = :img
+    		</#if>
+    		<#if info?exists && info!="">
+    			, INFO = :info
+    		</#if>
+    		WHERE ID = :id
+		]]>
+    </sql>
+    
+    <sql id="stopById">
+    	<![CDATA[
+    		update MARKET_LIMITED set ID = :id 
+    		<#if state?exists && state!="">
+    			, STATE = :state
+    		</#if>
+    		WHERE ID = :id
+		]]>
+    </sql>
+    
+    <sql id="deleteByCmmdtyId">
+    	<![CDATA[
+    		delete from MARKET_CMMDTY_PRICE where CMMDTY_ID = :cmmdtyId
+		]]>
+    </sql>
+	
+    <sql id="selectByGoodsId">
+    	<![CDATA[
+    		select ID as id,SUPPLIER_ID as supplierId,NAME as name,START_DTTM as startDttm,END_DTTM as endDttm,DISCOUNT_TYPE as discountType,
+    		STATE as state,CREATE_DTTM as createDttm,LAST_DTTM as lastDttm,LAST_PER as lastPer 
+			from MARKET_LIMITED where 1=1 
+			and ID in(select LIMITED_ID from market_cmmdty where CMMDTY_ID = :goodsId)
+		    and ID != :id
+		]]>
+    </sql>
+    
+    
+     <sql id="list">
+    	<![CDATA[
+    		select * from MARKET_CMMDTY_PRICE where CMMDTY_ID = :cmmdtyId order by MIN_NUM asc
+		]]>
+    </sql>
+	
+</sqlMap>

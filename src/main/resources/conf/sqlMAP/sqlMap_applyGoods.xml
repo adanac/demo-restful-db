@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="applyGoods">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into market_apply_goods
+				  (ID,APPLY_ID,SKU_ID,SPU_ID,GOODS_TITLE,GOODS_IMG,FAVORABLE_PRICE,MAX_PURCHASE,FIRST_NAVID,
+				  GOODS_COUNT,SCHEDULE,UPDATE_TIME,UPDATE_USER_ID)
+			values(:id,:applyId,:skuId,:spuId,:goodsTitle,:goodsImg,:favorablePrice,:maxPurchase,:firstNavId,
+				  :goodsCount,:schedule,:updateTime,:updateUserId)
+		]]>
+    </sql>
+    
+    <sql id="select">
+    	<![CDATA[
+    		select ID as id,APPLY_ID as applyId,SKU_ID as skuId,SPU_ID as spuId,GOODS_TITLE as goodsTitle,GOODS_IMG as goodsImg,
+    		FAVORABLE_PRICE as favorablePrice,MAX_PURCHASE as maxPurchase,FIRST_NAVID as firstNavId,
+			GOODS_COUNT as goodsCount,SCHEDULE as schedule,UPDATE_TIME as updateTime,UPDATE_USER_ID as updateUserId
+    		from market_apply_goods where 1=1 
+    		<#if id?exists && id!="">
+    			and ID = :id
+    		</#if>
+    		<#if skuId?exists && skuId!="">
+    			and SKU_ID = :skuId
+    		</#if>
+    		<#if applyId?exists && applyId!="">
+    			and APPLY_ID = :applyId
+    		</#if>
+    	]]>
+    </sql>
+    
+    <sql id="update">
+    	<![CDATA[
+    		update market_apply_goods set ID = :id
+    		<#if favorablePrice?exists && favorablePrice!="">
+    	    	,FAVORABLE_PRICE = :favorablePrice
+    	   	</#if>
+    	   	<#if maxPurchase?exists && maxPurchase!="">
+    	    	,MAX_PURCHASE = :maxPurchase
+    	   	</#if>
+    	   	<#if goodsCount?exists && goodsCount!="">
+    	    	,GOODS_COUNT = :goodsCount
+    	   	</#if>
+    	   	<#if schedule?exists && schedule!="">
+    	    	,SCHEDULE = :schedule
+    	   	</#if>
+    	   	<#if updateTime?exists && updateTime!="">
+    	    	,UPDATE_TIME = :updateTime 
+    	   	</#if>
+    	   	<#if updateUserId?exists && updateUserId!="">
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   	</#if>
+    	    WHERE ID = :id
+    	]]>
+    </sql>
+    
+    <sql id="delete">
+    	<![CDATA[
+    		delete from market_apply_goods where ID = :id
+    	]]>
+    </sql>
+    
+    <sql id="deleteByApplyId">
+    	<![CDATA[
+    		delete from market_apply_goods where APPLY_ID = :applyId
+    	]]>
+    </sql>
+    
+    <sql id="selectBySchedule">
+    	<![CDATA[
+	    	SELECT a.ID AS id,a.APPLY_ID AS applyId,a.SKU_ID AS skuId,a.SPU_ID AS spuId,a.GOODS_TITLE AS goodsTitle,a.GOODS_IMG AS goodsImg,
+	 		a.FAVORABLE_PRICE AS favorablePrice,a.MAX_PURCHASE AS maxPurchase,a.FIRST_NAVID as firstNavId,
+				a.GOODS_COUNT AS goodsCount,a.SCHEDULE AS schedule,a.UPDATE_TIME AS updateTime,a.UPDATE_USER_ID AS updateUserId
+			FROM market_apply_goods a,MARKET_APPLY b
+			WHERE a.APPLY_ID=b.ID 
+				AND b.SCH_ID=:scheId 
+				AND b.SUPP_ID=:suppId 
+			<#if id?exists && a.id!="">
+    			and a.ID = :id
+    		</#if>
+    		<#if skuId?exists && skuId!="">
+    			and a.SKU_ID = :skuId
+    		</#if>
+    	]]>
+    </sql>
+    
+    <sql id="countApplyedByTime">
+    	<![CDATA[
+    		select count(ID) from market_apply_goods where APPLY_ID in(
+	    		select ID from MARKET_APPLY where SCH_ID in (
+	    			select ID from MARKET_SCHEDULE where (SCH_START_TIME >= :schStartTime and SCH_START_TIME <= :schEndTime) or
+	    				(SCH_END_TIME >= :schStartTime and SCH_END_TIME <= :schEndTime) or
+	    				(SCH_START_TIME <= :schStartTime and SCH_END_TIME >= :schEndTime) or
+	    				(SCH_START_TIME >= :schStartTime and SCH_END_TIME <= :schEndTime)
+	    		) and STATUS != 3
+	    		<#if platformId?exists && platformId!="">
+	    			and PLATFORM_ID = :platformId
+	    		</#if>
+	    		<#if suppId?exists && suppId!="">
+	    			and SUPP_ID = :suppId
+	    		</#if>
+    		)and SKU_ID = :skuId
+    	]]>
+    </sql>
+    
+    <sql id="selectApplyedByTime">
+    	<![CDATA[
+    		select ID as id,APPLY_ID as applyId,SKU_ID as skuId,SPU_ID as spuId,GOODS_TITLE as goodsTitle,GOODS_IMG as goodsImg,
+	    		FAVORABLE_PRICE as favorablePrice,MAX_PURCHASE as maxPurchase,FIRST_NAVID as firstNavId,
+				GOODS_COUNT as goodsCount,SCHEDULE as schedule,UPDATE_TIME as updateTime,UPDATE_USER_ID as updateUserId 
+			from market_apply_goods where APPLY_ID in(
+	    		select ID from MARKET_APPLY where SCH_ID in (
+	    			select ID from MARKET_SCHEDULE where (SCH_START_TIME >= :schStartTime and SCH_START_TIME <= :schEndTime) or
+	    				(SCH_END_TIME >= :schStartTime and SCH_END_TIME <= :schEndTime) or
+	    				(SCH_START_TIME <= :schStartTime and SCH_END_TIME >= :schEndTime) or
+	    				(SCH_START_TIME >= :schStartTime and SCH_END_TIME <= :schEndTime)
+	    		) and STATUS != 3
+	    		<#if platformId?exists && platformId!="">
+	    			and PLATFORM_ID = :platformId
+	    		</#if>
+	    		<#if suppId?exists && suppId!="">
+	    			and SUPP_ID = :suppId
+	    		</#if>
+    		)
+    	]]>
+    </sql>
+    
+    
+    <sql id="checkAlreadyAdded">
+    	<![CDATA[
+    		SELECT a.ID AS id,a.APPLY_ID AS applyId,a.SKU_ID AS skuId,a.SPU_ID AS spuId,
+				a.GOODS_TITLE AS goodsTitle,a.GOODS_IMG AS goodsImg,
+				a.FAVORABLE_PRICE AS favorablePrice,a.MAX_PURCHASE AS maxPurchase,a.FIRST_NAVID as firstNavId,
+				a.GOODS_COUNT AS goodsCount, a.SCHEDULE AS SCHEDULE,
+				a.UPDATE_TIME AS updateTime,a.UPDATE_USER_ID AS updateUserId
+				FROM market_apply_goods a,MARKET_APPLY b
+			WHERE a.APPLY_ID = b.ID
+				and b.status in(1,2)
+				and a.SKU_ID=:skuId
+				and SCH_ID in (${scheIds})
+    	]]>
+    </sql>
+    
+</sqlMap>

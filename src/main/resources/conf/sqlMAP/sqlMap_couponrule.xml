@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="couponrule">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into coupon_rule
+				  (ID,SUPPID,NAME,TYPE,START_TIME,END_TIME,FACE_VALUE,ISSUED_MODE,ISSUED_NUM,SURPLUS_NUM,TAKE_MAX_NUM,SATISFY_MONEY,
+				  STATUS,UPDATE_TIME,UPDATE_USER_ID,CREATE_USER_ID,CREATE_TIME)
+			values(:id,:suppId,:name,:type,:startTime,:endTime,:faceValue,:issuedMode,:issuedNum,:surplusNum,:takeMaxNum,:satisfyMoney,
+				  :status,:updateTime,:updateUserId,:createUserId,:createTime)
+		]]>
+    </sql>
+    
+    <sql id="select">
+    	<![CDATA[
+    		SELECT * FROM 
+				(
+				SELECT
+								ID,
+								SUPPID,
+								NAME,
+								TYPE,
+								START_TIME AS startTime,
+								END_TIME AS endTime,
+								FACE_VALUE AS faceValue,
+								ISSUED_MODE AS issuedMode,
+								ISSUED_NUM AS issuedNum,
+								SURPLUS_NUM AS surplusNum,
+								TAKE_MAX_NUM AS takeMaxNum,
+								SATISFY_MONEY AS satisfyMoney,
+							
+								UPDATE_TIME AS updateTime,
+								UPDATE_USER_ID AS updateUserId,
+								CREATE_USER_ID AS createUserId,
+								CREATE_TIME AS createTime, 
+				CASE WHEN `STATUS` = 1 AND ( ( NOW() BETWEEN START_TIME AND END_TIME ) OR (NOW() < START_TIME) ) THEN 1 /*已开始*/
+					 WHEN `STATUS` = 2 AND ( ( NOW() BETWEEN START_TIME AND END_TIME ) OR (NOW() < START_TIME) ) THEN 2 /*未开始*/
+					 WHEN ( (`STATUS` = 3) OR (NOW() > END_TIME) ) THEN 3 END `STATUS` /*已结束*/
+    		 from coupon_rule t1 where 1=1  
+    		<#if id?exists && id!="">
+    			and t1.ID = :id
+    		</#if>
+    		<#if name?exists && name!="">
+    			and t1.NAME  like CONCAT('%', :name, '%')
+    		</#if>
+    		<#if suppId?exists && suppId!="">
+    			and t1.SUPPID  = :suppId
+    		</#if>
+    		
+    		<#if startTime?exists && startTime!="" && endTime?exists && endTime!="">
+    			and ((t1.START_TIME >= :startTime and t1.START_TIME <= :endTime) or 
+    			(t1.END_TIME >= :startTime and t1.END_TIME <= :endTime) or 
+    			(t1.START_TIME <= :startTime and t1.END_TIME >= :endTime) or 
+    			(t1.START_TIME >= :startTime and t1.END_TIME <= :endTime))
+    		</#if>
+    	
+    		<#if type?exists && type!="">
+    			and t1.TYPE = :type
+    		</#if>
+    		<#if issuedMode?exists && issuedMode!="">
+    			and t2.ISSUED_MODE =:issuedMode
+    		</#if>
+    		
+    		) a
+			where 1=1 
+				<#if status?exists && status!="">
+	    			and a.STATUS = :status
+	    		</#if>
+			ORDER BY
+				a.STATUS,
+				a.endTime DESC
+
+		]]>
+    </sql>
+    
+    
+	<sql id="update">
+    	<![CDATA[
+    		update coupon_rule set ID = :id
+    		<#if name?exists && name!="">
+    	    	,NAME = :name
+    	   	</#if>
+    	   	<#if startTime?exists && startTime!="">
+    	    	,START_TIME = :startTime
+    	   	</#if>
+    	   	<#if endTime?exists && endTime!="">
+    	    	,END_TIME = :endTime
+    	   	</#if>
+    	   	
+   	   		<#if faceValue?exists && faceValue!="">
+    	    	,FACE_VALUE = :faceValue
+    	   	</#if>
+    	   	<#if issuedNum?exists && issuedNum!="">
+    	    	,ISSUED_NUM = :issuedNum
+    	   	</#if>
+    	   	<#if surplusNum?exists && surplusNum!="">
+    	    	,SURPLUS_NUM = :surplusNum
+    	   	</#if>
+    	   	<#if takeMaxNum?exists && takeMaxNum!="0">
+    	    	,TAKE_MAX_NUM = :takeMaxNum
+    	   	</#if>
+    	   	
+   	   	  	<#if satisfyMoney?exists && satisfyMoney!="">
+    	    	,SATISFY_MONEY = :satisfyMoney
+    	   	</#if>
+    	   	<#if updateTime?exists && updateTime!="">
+    	    	,UPDATE_TIME = :updateTime
+    	   	</#if>
+    	   	<#if updateUserId?exists && updateUserId!="">
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   	</#if>
+    	   WHERE ID = :id
+		]]>
+    </sql>
+    
+   
+   <sql id="updateStatus">
+    	<![CDATA[
+    		update coupon_rule set 
+    	    	STATUS = :status
+   	    		,UPDATE_TIME = :updateTime
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   WHERE ID = :id
+		]]>
+    </sql>
+    
+    <sql id="updateSurplusNumById">
+    	<![CDATA[
+    		update coupon_rule set 
+    			 SURPLUS_NUM =SURPLUS_NUM-:surplusNum
+   	    		,UPDATE_TIME = :updateTime
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   WHERE ID = :id and SURPLUS_NUM>0
+		]]>
+    </sql>
+    
+</sqlMap>

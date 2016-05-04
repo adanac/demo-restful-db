@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="apply">
+		<sql id="insert">
+    	<![CDATA[
+    		insert into MARKET_APPLY
+				  (ID,PLATFORM_ID,SCH_ID,SUPP_ID,STATUS,REJECT_REASON,BOND,PAY_BOND,APPLY_TIME,UPDATE_TIME,UPDATE_USER_ID)
+			values(:id,:platformId,:schId,:suppId,:status,:rejectReason,:bond,:payBond,:applyTime,:updateTime,:updateUserId)
+		]]>
+    </sql>
+    
+    <sql id="select">
+    	<![CDATA[
+    		select ID as id,PLATFORM_ID as platformId,SCH_ID as schId,SUPP_ID as suppId,STATUS as status,REJECT_REASON as rejectReason,
+    		BOND as bond,PAY_BOND as payBond,APPLY_TIME as applyTime,UPDATE_TIME as updateTime,UPDATE_USER_ID as updateUserId
+    		from MARKET_APPLY where 1=1
+    		<#if id?exists && id!="">
+    			and ID = :id
+    		</#if>
+    		<#if platformId?exists && platformId!="">
+    			and PLATFORM_ID = :platformId
+    		</#if>
+    		<#if suppId?exists && suppId!="">
+    			and SUPP_ID = :suppId
+    		</#if>
+    		<#if schId?exists && schId!="">
+    			and SCH_ID = :schId
+    		</#if>
+    		<#if status?exists && status!="">
+    			and STATUS = :status
+    		</#if>
+    		
+    		<#if statusNot?exists && statusNot!="">
+    			and STATUS != :statusNot
+    		</#if>
+    	]]>
+    </sql>
+    
+    <sql id="update">
+    	<![CDATA[
+    		update MARKET_APPLY set ID = :id
+    		<#if status?exists && status!="">
+    	    	,STATUS = :status
+    	   	</#if>
+    	   	<#if rejectReason?exists && rejectReason!="">
+    	    	,REJECT_REASON = :rejectReason
+    	   	</#if>
+    	   	<#if bond?exists && bond!="">
+    	    	,BOND = :bond
+    	   	</#if>
+    	   	<#if payBond?exists && payBond!="">
+    	    	,PAY_BOND = :payBond
+    	   	</#if>
+    	   	<#if updateTime?exists && updateTime!="">
+    	    	,UPDATE_TIME = :updateTime
+    	   	</#if>
+    	   	<#if updateUserId?exists && updateUserId!="">
+    	    	,UPDATE_USER_ID = :updateUserId
+    	   	</#if>
+    	    WHERE ID = :id
+    	]]>
+    </sql>
+    
+    <sql id="delete">
+    	<![CDATA[
+    		delete from MARKET_APPLY where ID = :id
+    	]]>
+    </sql>
+    
+    
+    <sql id="queryForApproved">
+    	<![CDATA[
+    		select ID as id,PLATFORM_ID as platformId,SCH_ID as schId,SUPP_ID as suppId,STATUS as status,REJECT_REASON as rejectReason,
+    		BOND as bond,PAY_BOND as payBond,APPLY_TIME as applyTime,UPDATE_TIME as updateTime,UPDATE_USER_ID as updateUserId
+    		from MARKET_APPLY where 1=1 and STATUS!=3
+    		<#if schId?exists && schId!="">
+    			and SCH_ID = :schId
+    		</#if>
+    	]]>
+    </sql>
+    
+</sqlMap>

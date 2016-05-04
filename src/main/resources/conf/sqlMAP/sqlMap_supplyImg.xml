@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<sqlMap namespace="supplierImg">
+	<sql id="insert">
+    	<![CDATA[
+    		insert into MARKET_SUPPLIER_IMGS
+				  (ID,SUPP_ID,IMG,ACTIVITY_TYPE)
+			values(:id,:suppId,:img,:activityType	)
+		]]>
+    </sql>
+    
+    <sql id="selectByParam">
+    	<![CDATA[
+    		select * from MARKET_SUPPLIER_IMGS where 1=1 
+    			and SUPP_ID = :suppId
+    			and ACTIVITY_TYPE = :activityType
+		]]>
+    </sql>
+    
+    <sql id="update">
+    	<![CDATA[
+    		update MARKET_SUPPLIER_IMGS set SUPP_ID = :suppId 
+    		<#if img?exists && img!="">
+    			,IMG = :img
+    		</#if>
+    		WHERE SUPP_ID = :suppId and ACTIVITY_TYPE = :activityType
+		]]>
+    </sql>
+	
+    <sql id="deleteBysuppId">
+    	<![CDATA[
+    		delete from MARKET_SUPPLIER_IMGS where SUPP_ID = :suppId 
+		]]>
+    </sql>
+	
+    
+</sqlMap>
