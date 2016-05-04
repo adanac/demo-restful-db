@@ -1,5 +1,8 @@
-<html>
+<html><head><title>Cluster App Test</title></head>
 <body>
-<h2>Hello World!</h2>
+<fieldset>
+	<legend>hello restful</legend>
+</fieldset>
 </body>
+
 </html>
