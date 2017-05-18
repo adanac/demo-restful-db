@@ -16,17 +16,14 @@
  		<dependency>
 			<groupId>com.adanac.framework</groupId>
 			<artifactId>adanac-framework-common</artifactId>
-			<version>1.0.0</version>
 		</dependency>
         <dependency>
 			<groupId>com.adanac.framework</groupId>
 			<artifactId>adanac-dac</artifactId>
-			<version>1.0.0</version>
 		</dependency>
         <dependency>
 			<groupId>com.adanac.framework</groupId>
 			<artifactId>adanac-log</artifactId>
-			<version>1.0.0</version>
 		</dependency>
 		<dependency>
 		    <groupId>com.adanac.framework</groupId>
